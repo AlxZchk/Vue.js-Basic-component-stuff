@@ -1,26 +1,37 @@
 <template>
-  <div class="note-editor">
-    <textarea v-model="text" placeholder="Enter your note here..." rows="5"></textarea>
-    <div class="button-container">
-      <button
-        class="add-button"
-        @click="submitNote"
-        :disabled="isSubmitDisabled"
-      >{{ editNoteItem ? 'Save changes' : 'Add note' }}</button>
-      <button v-show="editNoteItem" class="cancel-button">Cancel</button>
-      <button v-show="!editNoteItem" class="color-button">Pick color</button>
+  <div class="container">
+    <div class="tag-serch" v-show="isSerchingByTag"></div>
+    <div class="note-editor" v-show="isntSearchingByTag">
+      <textarea v-model="text" placeholder="Enter your note here..." rows="5"></textarea>
+      <div class="button-container">
+        <button
+          class="add-button"
+          @click="submitNote"
+          :disabled="isSubmitDisabled"
+        >{{ editNoteItem ? 'Save changes' : 'Add note' }}</button>
+        <button v-show="editNoteItem" @click="cancelEditNote" class="cancel-button">Cancel</button>
+        <color-picker v-show="isntEditing" @color-changed="colorChangedHandler"/>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import ColorPicker from "@/components/ColorPicker.vue";
+
 export default {
   name: "NotesEditor",
 
   data: () => ({
     text: "",
-    editNoteItem: null
+    editNoteItem: null,
+    bgColor: "#000000",
+    tag: null
   }),
+
+  components: {
+    ColorPicker
+  },
 
   methods: {
     submitNote() {
@@ -31,20 +42,19 @@ export default {
       }
     },
     addNote() {
-      const rnd = () => Math.floor(Math.random() * 255);
-      const color = [rnd(), rnd(), rnd()].join(",");
-
       const note = {
         id: new Date().getTime(),
         text: this.text,
-        bgcolor: `rgb(${color})`
+        bgcolor: this.bgColor
       };
 
       this.$emit("addNote", note);
       this.text = "";
     },
     setEditNote(note) {
-      if (this.editNoteItem) { return; }
+      if (this.editNoteItem) {
+        return;
+      }
 
       this.editNoteItem = note;
       this.text = note.text;
@@ -52,22 +62,43 @@ export default {
     editNote() {
       const note = {
         ...this.editNoteItem,
-        text: this.text,
-      }
-      this.$emit('saveChangesNote', note);
+        text: this.text
+      };
+      this.$emit("saveChangesNote", note);
       this.editNoteItem = null;
-      this.text = '';
+      this.text = "";
+    },
+    cancelEditNote() {
+      this.editNoteItem = null;
+      this.text = "";
+    },
+    colorChangedHandler(color) {
+      this.bgColor = color;
     }
-  }, 
+  },
   computed: {
     isSubmitDisabled() {
       return this.text.trim().length === 0;
+    },
+    isSerchingByTag() {
+      return !!this.tag;
+    },
+    isntSearchingByTag() {
+      return !this.tag;
+    },
+    isntEditing() {
+      return !this.editNoteItem;
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
+.container {
+  width: 100%;
+  max-width: 600px;
+}
+
 .note-editor {
   width: 100%;
   max-width: 600px;

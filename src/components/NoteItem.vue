@@ -1,33 +1,65 @@
 <template>
   <div class="note" :style="{ backgroundColor: note.bgcolor }" @dblclick="onEdit">
     <span class="delete-note" @click="onRemove">x</span>
-    <span>{{ note.text }}</span>
+    <span @click="clickContentHandler" v-html="noteContent"></span>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'note-item',
+  name: "note-item",
   props: {
     note: {
       type: Object,
-      required: true,
+      required: true
     }
   },
+
   methods: {
     onRemove() {
-      this.$emit('removeNote', this.note.id);
+      this.$emit("removeNote", this.note.id);
     },
     onEdit($event) {
       $event.preventDefault();
-      this.$emit('editNote', this.note);
+      this.$emit("editNote", this.note);
+    },
+    escapeTags(str) {
+      const tagsToReplace = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;"
+      };
+
+      return str.replace(/[&<>]/g, (tag) => tagsToReplace[tag] || tag);
+    },
+    clickContentHandler(event) {
+      const element = event.target;
+      if (element.classList.contains('hashtag')) {
+        const hash = element.innerHTML.trim().substr(1);
+        this.$emit('tag-clicked', hash);
+      }
+    }
+  },
+  computed: {
+    noteContent() {
+      const text = this.note.text;
+      const words = text.split(" ");
+      const processedWords = words.map(word => {
+        if (word[0] === "#" && word.length > 1) {
+          return `<span class="hashtag">${this.escapeTags(word)}</span>`;
+        }
+
+        return this.escapeTags(word);
+      });
+
+      return processedWords.join(" ");
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
-  .note {
+.note {
   width: 200px;
   height: auto;
   float: left;
@@ -56,4 +88,5 @@ export default {
 .note:hover .delete-note {
   display: block;
 }
+
 </style>

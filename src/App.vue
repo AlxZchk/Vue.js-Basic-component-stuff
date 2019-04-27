@@ -48,7 +48,7 @@ export default {
     },
     colorSelectionHandler(color) {
       console.log(color);
-    }
+    },
   }
 };
 </script>
@@ -73,5 +73,11 @@ body {
   flex-direction: column;
   align-items: center;
   margin: 0 auto;
+}
+
+.hashtag {
+  color: lightblue;
+  text-decoration: underline;
+  cursor: pointer;
 }
 </style>
