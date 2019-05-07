@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="tag-search" v-show="isSearchShown">Search posts with <span class="hashtag">#{{searchTag}}</span> tag. <span @click="cancelTagSearch" class="cancel-tag-search">Cancel search</span></div>
+    <div class="tag-search" v-show="isSearchShown">Searching posts with <span class="hashtag">#{{searchTag}}</span> tag. <span @click="cancelTagSearch" class="cancel-tag-search">Cancel search</span></div>
     <div class="notes-grid" ref="grid">
       <NoteItem
         @tag-clicked="tagClickedHandler"

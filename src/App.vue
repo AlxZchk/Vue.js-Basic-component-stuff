@@ -76,7 +76,7 @@ body {
 }
 
 .hashtag {
-  color: lightblue;
+  color: purple;
   text-decoration: underline;
   cursor: pointer;
 }

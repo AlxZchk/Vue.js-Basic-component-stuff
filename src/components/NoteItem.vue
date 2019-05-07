@@ -60,6 +60,7 @@ export default {
 
 <style lang="scss" scoped>
 .note {
+  user-select: none;
   width: 200px;
   height: auto;
   float: left;
